@@ -314,8 +314,8 @@ pub fn update(
 
     // Hide the timed message box if it ran out
     let mut window_timed_out = false;
-    if let Window::Message { ref mut ttl, .. } = state.window_stack.top_mut() {
-        if let Some(ref mut ttl) = ttl {
+    if let Window::Message { ttl, .. } = state.window_stack.top_mut() {
+        if let Some(ttl) = ttl {
             *ttl = util::duration_sub_or_zero(*ttl, dt);
         }
         window_timed_out = ttl.map(|ttl| ttl.as_millis() == 0).unwrap_or(false);
@@ -410,11 +410,7 @@ pub fn update(
                         };
                     }
                 }
-                Window::Message {
-                    ref title,
-                    ref message,
-                    ..
-                } => {
+                Window::Message { title, message, .. } => {
                     if top_level {
                         game_update_result = message::process(state, ui, title, message, display)
                     }
@@ -971,7 +967,7 @@ fn process_game(
     let explored = state
         .world
         .cell(state.mouse_world_position())
-        .map_or(true, |cell| cell.explored);
+        .is_none_or(|cell| cell.explored);
 
     let mouse_window_pos_px = state.mouse.screen_pos;
     let window_size_px = display.screen_size_px;
@@ -1144,9 +1140,7 @@ fn process_monsters(
                     let path_changed = monster_readonly
                         .path
                         .last()
-                        .map_or(true, |&cached_destination| {
-                            cached_destination != destination
-                        });
+                        .is_none_or(|&cached_destination| cached_destination != destination);
 
                     // NOTE: we keep a cache of any previously calculated
                     // path in `monster.path`. If the precalculated path

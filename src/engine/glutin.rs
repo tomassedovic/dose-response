@@ -153,7 +153,9 @@ where
     //    - still, feels like we shouldn't have to
     //
     // Both are fixed with the line below:
-    std::env::set_var("WINIT_UNIX_BACKEND", "x11");
+    unsafe {
+        std::env::set_var("WINIT_UNIX_BACKEND", "x11");
+    }
 
     let egui_context = CtxRef::default();
 

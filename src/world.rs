@@ -290,7 +290,7 @@ impl World {
                 let pos = player_info.pos + offset;
                 if self.walkable(pos, Blocker::WALL, player_info.pos) {
                     // Skip if there already is an item at the position
-                    if !self.cell(pos).map_or(true, |cell| cell.items.is_empty()) {
+                    if !self.cell(pos).is_none_or(|cell| cell.items.is_empty()) {
                         continue;
                     }
 
